@@ -1,4 +1,4 @@
-update=Mon 14 Mar 2016 10:48:25 PM IST
+update=2016 March 19, Saturday 22:40:46
 version=1
 last_client=kicad
 [cvpcb]
@@ -45,6 +45,7 @@ LibName31=pololu_a4988
 version=1
 PageLayoutDescrFile=
 LastNetListRead=laser_board.net
+UseCmpFile=0
 PadDrill=0.6
 PadDrillOvalY=0.6
 PadSizeH=1.5
