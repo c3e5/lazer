@@ -8,6 +8,9 @@ import logging
 import math
 import docopt
 
+from simplifier import PathSimplifier
+from generator import GCodeGenerator
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -70,7 +73,7 @@ class OldSchoolPattern(object):
             siy = self._vectors[i][1]  # y of current source
             dix = self._vectors[(i + 1) % len(self._vectors)][0]  # x of current dest
             diy = self._vectors[(i + 1) % len(self._vectors)][1]  # y of current dest
-            self._l.debug('vectors: (%f, %f) -> (%f, %f)' % (six, siy, dix, diy))
+            self._l.debug('main vectors: (%f, %f) -> (%f, %f)' % (six, siy, dix, diy))
             sxst = six / self._npoints  # source x step
             syst = siy / self._npoints  # source y step
             dxst = dix / self._npoints  # dest x step
@@ -86,103 +89,6 @@ class OldSchoolPattern(object):
                 dx = dxst * dp
                 dy = dyst * dp
                 fn(((sx, sy), (dx, dy)))
-
-
-class PathSimplifier(object):
-    '''
-    Simplify a path that is described as vectors.
-    '''
-    def __init__(self):
-        self._vectors = []
-        self._l = logging.getLogger('Simplifier')
-
-    def add_vector(self, vector):
-        self._vectors.append(vector)
-
-    def simplify(self):
-        '''
-        Try to create a continuous paths
-        '''
-        self._l.debug('Simplify called')
-        num_simplified = 0
-        ov = self._vectors[:]  # copy of vector array
-        nv = []  # new vector array
-        pd = None
-        while ov:
-            for i in range(len(ov)):
-                cs = ov[i][0]  # current source
-                cd = ov[i][1]  # current dest
-                if cs == pd or cd == pd:
-                    if cd == pd:
-                        ov[i] = (ov[i][1], ov[i][0])
-                    num_simplified += 1
-                    break
-            else:
-                # no match - should probably append the closest vector,
-                # but will do that later ...
-                i = -1
-            nv.append(ov[i])
-            pd = ov[i][1]
-            del ov[i]
-        self._l.debug('Simplified %d paths' % num_simplified)
-        return nv
-
-
-class GCodeGenerator(object):
-    '''
-    Generate G-Code from array of vectors
-    '''
-    def __init__(self, output, header_comment):
-        self.is_on = True
-        self._output = output
-        self._comment = header_comment
-        self._l = logging.getLogger('GCodeGenerator')
-
-    def emit(self, s, comm=None):
-        if comm is None:
-            comm = ''
-        else:
-            comm = ' (%s)' % comm.replace(')', ' ').replace('(', ' ')
-        self._output.write(s + comm + '\n')
-
-    def eoff(self):
-        self.is_on = False
-        self.emit('M5', 'laser off')
-
-    def eon(self):
-        self.is_on = True
-        self.emit('M3', 'laser on')
-
-    def egoto(self, x, y, comm=None):
-        gtc = '01' if self.is_on else '00'
-        speed = 600 if self.is_on else 800
-        self.emit('G%s X%f Y%f F%d' % (gtc, x, y, speed), comm)
-
-    def ecomm(self, comment):
-        for l in comment.split('\n'):
-            self.emit('(%s)' % (l.replace(')', ' ').replace('(', ' ')))
-
-    def generate(self, vectors):
-        path_count = 0
-        self._l.debug('Generating Gcode')
-        self.ecomm(self._comment)
-        self.emit('G21', 'Set units to mm')
-        pd = None  # previous destination
-        for vector in vectors:
-            src = vector[0]
-            dst = vector[1]
-            if src != pd:
-                path_count += 1
-                self.ecomm('Starting path %d' % (path_count))
-                self.eoff()
-                self.egoto(src[0], src[1])
-                self.eon()
-            self.egoto(dst[0], dst[1])
-            pd = dst
-        self.eoff()
-        self.egoto(0, 0)
-        self.ecomm('Done')
-        self._l.debug('Gcode generation completed')
 
 
 def subtract(vectors, xsub, ysub):
