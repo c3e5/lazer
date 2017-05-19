@@ -56,4 +56,3 @@ class GCodeGenerator(object):
         self.egoto(0, 0)
         self.ecomm('Done')
         self._l.debug('Gcode generation completed')
-
