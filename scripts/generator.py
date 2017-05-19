@@ -5,10 +5,12 @@ class GCodeGenerator(object):
     '''
     Generate G-Code from array of vectors
     '''
-    def __init__(self, output, header_comment):
+    def __init__(self, output, header_comment, cut_feed=200, passing_feed=800):
         self.is_on = True
         self._output = output
         self._comment = header_comment
+        self._cut_feed = cut_feed
+        self._passing_feed = passing_feed
         self._l = logging.getLogger('GCodeGenerator')
 
     def emit(self, s, comm=None):
@@ -28,7 +30,7 @@ class GCodeGenerator(object):
 
     def egoto(self, x, y, comm=None):
         gtc = '01' if self.is_on else '00'
-        speed = 600 if self.is_on else 800
+        speed = self._cut_feed if self.is_on else self._passing_feed
         self.emit('G%s X%f Y%f F%d' % (gtc, x, y, speed), comm)
 
     def ecomm(self, comment):
