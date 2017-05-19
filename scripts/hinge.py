@@ -2,7 +2,7 @@
 '''
 Generate a g-code pattern to create hinge
 
-Usage: hinge.py <x> <y> <w> <h> <spacing> [<outfile>]
+Usage: hinge.py <x> <y> <w> <h> <spacing> <outfile> [--cut_feed=<cut_feed>] [--passing_feed=<passing_feed>]
 
 x, y are the offset from (0, 0), it is negative (e.g. x=5 y=5 means (-5, -5))
 w, h are the width and height of the hinge, respectively
@@ -34,7 +34,7 @@ class HingePattern(object):
         :param fn: function to call on each iteration
         '''
         # all sizes in mm
-        cut_length = 20
+        cut_length = 15
         skip_length = 4
         unit_length = cut_length + skip_length
         odd_shift = unit_length / 2
@@ -76,6 +76,8 @@ def main():
     w = int(opts['<w>'])
     h = int(opts['<h>'])
     spacing = float(opts['<spacing>'])
+    cut_feed = 600 if not opts['--cut_feed'] else int(opts['--cut_feed'])
+    passing_feed = 800 if not opts['--passing_feed'] else int(opts['--passing_feed'])
     outfilename = opts['<outfile>']
     if not outfilename:
         outfilename = 'os_%f_%d_%d_%d_%d.ngc' % (spacing, h, w, x, y)
@@ -86,7 +88,7 @@ def main():
 spacing: %f
 height: %d
 width: %d''' % (spacing, h, w)
-    g = GCodeGenerator(open(outfilename, 'w'), comment)
+    g = GCodeGenerator(open(outfilename, 'w'), comment, cut_feed, passing_feed)
     p.giterate(s.add_vector)
     vectors = s.simplify()
     #
