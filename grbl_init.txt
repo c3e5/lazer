@@ -1,17 +1,39 @@
 G17 G21 G90 G94 G54
-$100=2
-$101=2
+
+;step pulse
+$0=232
+
+;step idle delay
+$1=10
+
+;limit pins invert
 $5=0
+
 $13=0
-$22=1
 $20=1
-$21=1
+$21=0
+$22=0
 $23=0
-$27=5
 $25=3000
-$110=3000
-$111=3000
-$120=10
-$121=10
+$27=5
+
+;X axis steps/mm
+$100=134
+
+;Y axis steps/mm
+$101=2547
+
+;X axis max rate mm/min
+$110=700
+
+;Y axis max rate mm/min
+$111=200
+
+;acceleration
+$120=100
+$121=100
+
+;Max travel
 $130=300
 $131=300
+
