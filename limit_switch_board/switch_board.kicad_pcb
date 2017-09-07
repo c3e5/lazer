@@ -1,11 +1,11 @@
-(kicad_pcb (version 4) (host pcbnew 4.0.7-e0-6372~58~ubuntu16.04.1)
+(kicad_pcb (version 4) (host pcbnew 4.0.7-e2-6376~58~ubuntu16.04.1)
 
   (general
     (links 11)
     (no_connects 0)
     (area 126.6092 32.055999 165.302001 60.7338)
     (thickness 1.6)
-    (drawings 4)
+    (drawings 5)
     (tracks 37)
     (zones 0)
     (modules 9)
@@ -377,6 +377,9 @@
     (pad 1 np_thru_hole circle (at 0 0) (size 3.2 3.2) (drill 3.2) (layers *.Cu *.Mask))
   )
 
+  (gr_text + (at 136 46.5) (layer F.SilkS)
+    (effects (font (size 1.5 1.5) (thickness 0.3)))
+  )
   (gr_line (start 165.227 60.5409) (end 165.227 32.131) (angle 90) (layer Edge.Cuts) (width 0.15))
   (gr_line (start 126.8222 60.5409) (end 165.227 60.5409) (angle 90) (layer Edge.Cuts) (width 0.15))
   (gr_line (start 126.8222 32.131) (end 126.8222 60.5409) (angle 90) (layer Edge.Cuts) (width 0.15))
