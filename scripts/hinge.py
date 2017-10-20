@@ -13,6 +13,7 @@ import docopt
 
 from simplifier import PathSimplifier
 from generator import GCodeGenerator
+from vectors import Vector, Point, add_to_vectors
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -47,26 +48,16 @@ class HingePattern(object):
             # go over the rows
             x = odd_shift if odd_line else 0
             while x < self.width:
-                vector_start = (x, y)
+                vector_start = Point(x, y)
                 endx = x + cut_length
                 if endx > self.width:
                     endx = self.width
-                vector_end = (endx, y)
-                vector = (vector_start, vector_end)
+                vector_end = Point(endx, y)
+                vector = Vector(vector_start, vector_end)
                 fn(vector)
                 x = x + unit_length
             y += self.spacing
             odd_line = not odd_line
-
-
-def subtract(vectors, xsub, ysub):
-    res = []
-    for v in vectors:
-        s, d = v
-        sx, sy = s
-        dx, dy = d
-        res.append(((sx - xsub, sy - ysub), (dx - xsub, dy - ysub)))
-    return res
 
 
 def main():
@@ -94,7 +85,7 @@ width: %d''' % (spacing, h, w)
     #
     # adjust all vectors to be negative only
     #
-    vectors = subtract(vectors, x, y)
+    vectors = add_to_vectors(vectors, -Point(x + w, y + h))
     g.generate(vectors)
 
 

@@ -11,6 +11,8 @@ import docopt
 from simplifier import PathSimplifier
 from generator import GCodeGenerator
 
+from vectors import Point, Vector, add_to_vectors
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -28,7 +30,7 @@ class OldSchoolPattern(object):
         self._npoints = npoints
         self._assertions()
         self._l = logging.getLogger('OldSchoolPattern')
-        self._vectors = self._make_vectors()
+        self._points = self._make_points()
 
     def _assertions(self):
         '''
@@ -41,19 +43,20 @@ class OldSchoolPattern(object):
         if self._npoints < 2:
             raise Exception('npoints (%d) < 2' % (self._npoints))
 
-    def _make_vectors(self):
-        vectors = []
+    def _make_points(self):
+        points = []
         angle = (2.0 * math.pi) / self._nlines  # radians
         self._l.debug('Base angle: %f' % angle)
         for i in range(self._nlines):
             iangle = angle * i
             # self.logger.info('[%d] angle: %f' % (i, iangle))
             # self.logger.info('[%d] (%f, %f)' % (i, math.cos(iangle), math.sin(iangle)))
-            ix = math.cos(iangle) * self._radius
-            iy = math.sin(iangle) * self._radius
-            self._l.debug('[%d] (%f, %f)' % (i, ix, iy))
-            vectors.append((ix, iy))
-        return vectors
+            x = math.cos(iangle) * self._radius
+            y = math.sin(iangle) * self._radius
+            p = Point(x, y)
+            self._l.debug('[%d] %s' % (i, p))
+            points.append(p)
+        return points
 
     def giterate(self, fn):
         '''
@@ -68,16 +71,14 @@ class OldSchoolPattern(object):
         #
         # for each 2 adjacent vectors
         #
-        for i in range(len(self._vectors)):
-            six = self._vectors[i][0]  # x of current source
-            siy = self._vectors[i][1]  # y of current source
-            dix = self._vectors[(i + 1) % len(self._vectors)][0]  # x of current dest
-            diy = self._vectors[(i + 1) % len(self._vectors)][1]  # y of current dest
-            self._l.debug('main vectors: (%f, %f) -> (%f, %f)' % (six, siy, dix, diy))
-            sxst = six / self._npoints  # source x step
-            syst = siy / self._npoints  # source y step
-            dxst = dix / self._npoints  # dest x step
-            dyst = diy / self._npoints  # dest y step
+        for i in range(len(self._points)):
+            s = self._points[i]
+            d = self._points[(i + 1) % len(self._points)]
+            self._l.debug('main vectors: %s' % Vector(s, d))
+            sxst = s.x / self._npoints  # source x step
+            syst = s.y / self._npoints  # source y step
+            dxst = d.x / self._npoints  # dest x step
+            dyst = d.y / self._npoints  # dest y step
             #
             # generate each internal vector
             #
@@ -88,18 +89,9 @@ class OldSchoolPattern(object):
                 sy = syst * sp
                 dx = dxst * dp
                 dy = dyst * dp
-                fn(((sx, sy), (dx, dy)))
-
-
-def subtract(vectors, xsub, ysub):
-    res = []
-    for v in vectors:
-        s, d = v
-        sx, sy = s
-        dx, dy = d
-        res.append(((sx - xsub, sy - ysub), (dx - xsub, dy - ysub)))
-    return res
-
+                s = Point(sx, sy)
+                d = Point(dx, dy)
+                fn(Vector(s, d))
 
 
 def main():
@@ -124,10 +116,9 @@ Number of points/line: %d''' % (radius, nlines, npoints)
     #
     # adjust all vectors to be negative only
     #
-    vectors = subtract(vectors, radius, radius)
+    vectors = add_to_vectors(vectors, -Point(radius, radius))
     g.generate(vectors)
 
 
 if __name__ == '__main__':
     main()
-

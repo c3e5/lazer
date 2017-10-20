@@ -26,7 +26,7 @@ class GCodeGenerator(object):
 
     def eon(self):
         self.is_on = True
-        self.emit('M3', 'laser on')
+        self.emit('M4', 'laser on')
 
     def egoto(self, x, y, comm=None):
         gtc = '01' if self.is_on else '00'
@@ -44,15 +44,16 @@ class GCodeGenerator(object):
         self.emit('G21', 'Set units to mm')
         pd = None  # previous destination
         for vector in vectors:
-            src = vector[0]
-            dst = vector[1]
+            src = vector.s
+            dst = vector.d
             if src != pd:
                 path_count += 1
+                self._l.debug("%s != %s", src, pd)
                 self.ecomm('Starting path %d' % (path_count))
                 self.eoff()
-                self.egoto(src[0], src[1])
+                self.egoto(src.x, src.y)
                 self.eon()
-            self.egoto(dst[0], dst[1])
+            self.egoto(dst.x, dst.y)
             pd = dst
         self.eoff()
         self.egoto(0, 0)
