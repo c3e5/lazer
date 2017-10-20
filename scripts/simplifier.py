@@ -33,10 +33,14 @@ class PathSimplifier(object):
         ov = self._vectors[:]
         nv = []
         pd = Point(self.max_x, self.max_y)
+        pv = None
         while ov:
             # Try and find a vector that starts where the last one ended
             for i in range(len(ov)):
                 cv = ov[i]  # current vector
+                # don't go back the same way
+                if (pv == cv) or (pv == -cv):
+                    continue
                 if cv.s == pd or cv.d == pd:
                     if cv.d == pd:
                         ov[i] = -cv
@@ -64,8 +68,8 @@ class PathSimplifier(object):
                     num_simplified += 1
                     self._l.debug('[C] %s: %s' % (pd, ov[i]))
             nv.append(ov[i])
-            pd = ov[i].d
-            # pv = ov[i]
+            pv = ov[i]
+            pd = pv.d
             del ov[i]
         self._l.debug('Simplified %d paths' % num_simplified)
         return nv

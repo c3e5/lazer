@@ -75,7 +75,7 @@ class ResistorBenderPattern(object):
     def __init__(self):
         self.resistor_length = 6
         self.bend_length_min = 4
-        self.bend_length_max = 10
+        self.bend_length_max = 12
         self.bend_length_step = 1
         self.bend_count = (self.bend_length_max - self.bend_length_min + 1) / self.bend_length_step
         self.bend_cut_height = 0.4
@@ -175,10 +175,30 @@ class ResistorBenderPattern(object):
         fn(Vector(prev_left, self.left_vector.point_for_y(self.dim.h)))
         fn(Vector(prev_right, self.right_vector.point_for_y(self.dim.h)))
 
+    def generate_bending_tunnels(self, fn):
+        for i in range(self.bend_count):
+            y = self.get_bend_y(i)
+            length = self.get_bend_length(i)
+
+            # left tunnel
+            xstart = self.left_vector.x_for_y(y) + self.margin_sides
+            xend = xstart + length
+            fn(Vector(Point(xstart, y), Point(xend, y)))
+
+            # right tunnel
+            xend = self.right_vector.x_for_y(y) - self.margin_sides
+            xstart = xend - length
+            fn(Vector(Point(xstart, y), Point(xend, y)))
+
     def giterate(self, fn):
-        self.generate_border(fn)
-        self.generate_resistor_box(fn)
-        self.generate_bending_cuts(fn)
+        def cut_fn(vector):
+            for i in range(4):
+                fn(vector)
+
+        self.generate_border(cut_fn)
+        self.generate_resistor_box(cut_fn)
+        self.generate_bending_cuts(cut_fn)
+        self.generate_bending_tunnels(fn)
 
 
 def do_square(start, dim):
