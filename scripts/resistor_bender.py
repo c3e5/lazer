@@ -45,7 +45,7 @@ import logging
 
 from simplifier import PathSimplifier
 from generator import GCodeGenerator
-from vectors import Vector, Point, add_to_vectors
+from vectors import Path, Vector, Point, add_to_vectors
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -132,7 +132,7 @@ class ResistorBenderPattern(object):
         h = self.dim.h - ((self.margin_top + self.margin_bottom) / 2)
         x = (self.dim.w - self.resistor_length) / 2
         y = self.margin_top / 2
-        for v in do_square(Point(x, y), Point(w, h)):
+        for v in Path.do_square(Point(x, y), Point(w, h)):
             fn(v)
 
     def generate_bending_cuts(self, fn):
@@ -199,15 +199,6 @@ class ResistorBenderPattern(object):
         self.generate_resistor_box(cut_fn)
         self.generate_bending_cuts(cut_fn)
         self.generate_bending_tunnels(fn)
-
-
-def do_square(start, dim):
-    return [
-        Vector(start, start + dim.X()),
-        Vector(start + dim.X(), start + dim),
-        Vector(start + dim, start + dim.Y()),
-        Vector(start + dim.Y(), start),
-    ]
 
 
 def main():

@@ -139,37 +139,42 @@ class Path(object):
     def add_point(self, point):
         self._current = point
         self._points.append(point)
+        return self
 
     def current(self):
         return self._current
 
     def mr(self, x=0, y=0):
         '''Move relative'''
-        self.add_point(self._current + Point(x, y))
+        return self.add_point(self._current + Point(x, y))
 
     def mrx(self, x):
         '''Move relative (only the x axis)'''
-        self.mr(x=x)
+        return self.mr(x=x)
 
     def mry(self, y):
         '''Move relative (only the y axis)'''
-        self.mr(y=y)
+        return self.mr(y=y)
 
     def mt(self, x, y):
         '''Move to absolute point'''
-        self.add_point(Point(x, y))
+        return self.add_point(Point(x, y))
 
     def mtx(self, x):
         '''Move to an absolute x, same y'''
-        self.mt(x, self._current.y)
+        return self.mt(x, self._current.y)
 
     def mty(self, y):
         '''Move to an absolute y, same x'''
-        self.mt(self._current.x, y)
+        return self.mt(self._current.x, y)
 
     def vectors(self):
         for i in range(len(self._points) - 1):
             yield Vector(self._points[i], self._points[i + 1])
+
+    @staticmethod
+    def do_square(start, dim):
+        return Path(start).mrx(dim.x).mry(dim.y).mrx(-dim.x).mry(-dim.y).vectors()
 
 
 def add_to_vectors(vs, point):
