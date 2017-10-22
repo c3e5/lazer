@@ -183,12 +183,12 @@ class ResistorBenderPattern(object):
             # left tunnel
             xstart = self.left_vector.x_for_y(y) + self.margin_sides
             xend = xstart + length
-            fn(Vector(Point(xstart, y), Point(xend, y)))
+            fn(Vector(Point(xstart, y), Point(xend, y), {'pre_command': 'S400', 'post_command': 'S1000'}))
 
             # right tunnel
             xend = self.right_vector.x_for_y(y) - self.margin_sides
             xstart = xend - length
-            fn(Vector(Point(xstart, y), Point(xend, y)))
+            fn(Vector(Point(xstart, y), Point(xend, y), {'pre_command': 'S400', 'post_command': 'S1000'}))
 
     def giterate(self, fn):
         def cut_fn(vector):
