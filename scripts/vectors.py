@@ -128,5 +128,49 @@ class Vector(object):
         return '%s -> %s' % (self.s, self.d)
 
 
+class Path(object):
+
+    def __init__(self, p=None):
+        self._points = []
+        self._current = None
+        if p:
+            self.add_point(p)
+
+    def add_point(self, point):
+        self._current = point
+        self._points.append(point)
+
+    def current(self):
+        return self._current
+
+    def mr(self, x=0, y=0):
+        '''Move relative'''
+        self.add_point(self._current + Point(x, y))
+
+    def mrx(self, x):
+        '''Move relative (only the x axis)'''
+        self.mr(x=x)
+
+    def mry(self, y):
+        '''Move relative (only the y axis)'''
+        self.mr(y=y)
+
+    def mt(self, x, y):
+        '''Move to absolute point'''
+        self.add_point(Point(x, y))
+
+    def mtx(self, x):
+        '''Move to an absolute x, same y'''
+        self.mt(x, self._current.y)
+
+    def mty(self, y):
+        '''Move to an absolute y, same x'''
+        self.mt(self._current.x, y)
+
+    def vectors(self):
+        for i in range(len(self._points) - 1):
+            yield Vector(self._points[i], self._points[i + 1])
+
+
 def add_to_vectors(vs, point):
     return [v + point for v in vs]
