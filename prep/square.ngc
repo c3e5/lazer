@@ -1,0 +1,26 @@
+G17
+G90
+
+M5
+S1000
+
+G21 (All units in mm)
+
+(Start cutting path id: path4022)
+(Change tool to Default tool)
+
+G00 X-50.000 Y-50.000
+M3
+
+G01 X-80.000 Y-50.000 F200.000
+G01 X-80.000 Y-80.000 F200.000
+G01 X-50.000 Y-80.000 F200.000
+G01 X-50.000 Y-50.000 F200.000
+
+(Footer)
+M5
+G00 X0.0000 Y0.0000
+M2
+(Using default footer. To add your own footer create file "footer" in the output dir.)
+(end)
+%
