@@ -1566,12 +1566,12 @@
       (net 33 "Net-(UZ1-Pad16)"))
   )
 
-  (module Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm (layer F.Cu) (tedit 59B1938E) (tstamp 59B19272)
+  (module Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm (layer F.Cu) (tedit 5B47AAAC) (tstamp 59B19272)
     (at 101 91)
     (descr "Through hole straight pin header, 1x03, 2.54mm pitch, single row")
     (tags "Through hole pin header THT 1x03 2.54mm single row")
     (path /59B19829)
-    (fp_text reference "LIMZ X Y" (at -2.5 3.5 90) (layer F.SilkS)
+    (fp_text reference "LIMZ Y X" (at -2.5 3.5 90) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value Conn_01x03 (at 0 7.41) (layer F.Fab) hide
